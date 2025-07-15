@@ -12,6 +12,7 @@ function App() {
     comissao: '',
     imposto: '',
     taxaCartao: '',
+    outroCusto: '',
     margemLucro: ''
   })
   
@@ -63,10 +64,11 @@ function App() {
     const comissao = parseFloat(formData.comissao.replace(',', '.'))
     const imposto = parseFloat(formData.imposto.replace(',', '.'))
     const taxaCartao = parseFloat(formData.taxaCartao.replace(',', '.'))
+    const outroCusto = parseFloat(formData.outroCusto.replace(',', '.'))
     const margemLucro = parseFloat(formData.margemLucro.replace(',', '.'))
     
     // Soma todos os percentuais
-    const somaPercentuais = comissao + imposto + taxaCartao + margemLucro
+    const somaPercentuais = comissao + imposto + taxaCartao + outroCusto + margemLucro
     
     // Calcula o markup divisor: 1 / (1 - (soma/100))
     const markupDivisor = 1 / (1 - (somaPercentuais / 100))
@@ -75,6 +77,7 @@ function App() {
       comissao,
       imposto,
       taxaCartao,
+      outroCusto,
       margemLucro,
       somaPercentuais,
       markupDivisor: markupDivisor.toFixed(2)
@@ -86,6 +89,7 @@ function App() {
       comissao: '',
       imposto: '',
       taxaCartao: '',
+      outroCusto: '',
       margemLucro: ''
     })
     setResultado(null)
@@ -109,6 +113,12 @@ function App() {
       id: 'taxaCartao',
       label: 'Qual percentual da taxa de cartão que você utiliza?',
       placeholder: 'Ex: 3,2',
+      icon: Percent
+    },
+    {
+      id: 'outroCusto',
+      label: 'Outro custo/despesa percentual variável sobre as vendas',
+      placeholder: 'Ex: 1,5',
       icon: Percent
     },
     {
@@ -257,6 +267,10 @@ function App() {
                       <div className="flex justify-between p-3 bg-gray-50 rounded">
                         <span className="text-gray-600">Taxa Cartão:</span>
                         <span className="font-medium">{resultado.taxaCartao}%</span>
+                      </div>
+                      <div className="flex justify-between p-3 bg-gray-50 rounded">
+                        <span className="text-gray-600">Outro Custo:</span>
+                        <span className="font-medium">{resultado.outroCusto}%</span>
                       </div>
                       <div className="flex justify-between p-3 bg-gray-50 rounded">
                         <span className="text-gray-600">Margem Lucro:</span>
