@@ -97,13 +97,13 @@ function App() {
       id: 'comissao',
       label: 'Qual o percentual de comissão pago aos vendedores?',
       placeholder: 'Ex: 5,5',
-      icon: TrendingUp
+      icon: Percent
     },
     {
       id: 'imposto',
       label: 'Qual o percentual de imposto que você paga sobre faturamento?',
       placeholder: 'Ex: 12,0',
-      icon: Calculator
+      icon: Percent
     },
     {
       id: 'taxaCartao',
@@ -115,7 +115,7 @@ function App() {
       id: 'margemLucro',
       label: 'Qual o percentual de margem de lucro que você quer obter ao final?',
       placeholder: 'Ex: 15,0',
-      icon: TrendingUp
+      icon: Percent
     }
   ]
 
@@ -309,4 +309,5 @@ function App() {
 }
 
 export default App
+
 
