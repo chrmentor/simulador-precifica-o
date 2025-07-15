@@ -458,6 +458,20 @@ function App() {
             {renderStepContent()}
           </Card>
         </div>
+
+        {/* Call to Action */}
+        <div className="mt-8 p-6 bg-blue-600 text-white rounded-lg text-center shadow-lg">
+          <h2 className="text-2xl font-bold mb-2">Economize tempo e dinheiro com a Mentorial Contabilidade</h2>
+          <p className="text-blue-100 mb-4">Especialistas em contabilidade para Infoprodutores e afiliados</p>
+          <a 
+            href="https://api.whatsapp.com/send/?phone=5544997732929&text&type=phone_number&app_absent=0"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-white text-blue-700 font-semibold py-3 px-8 rounded-full shadow-md hover:bg-gray-100 transition duration-300"
+          >
+            Fale com um especialista
+          </a>
+        </div>
       </main>
 
       {/* Footer */}
