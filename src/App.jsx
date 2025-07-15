@@ -157,7 +157,7 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Formulário */}
           <Card className="shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
               <CardTitle className="flex items-center space-x-2">
                 <Calculator className="h-5 w-5" />
                 <span>Dados para Cálculo</span>
@@ -224,7 +224,7 @@ function App() {
 
           {/* Resultados */}
           <Card className="shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-t-lg">
+            <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white">
               <CardTitle className="flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5" />
                 <span>Resultado do Cálculo</span>
