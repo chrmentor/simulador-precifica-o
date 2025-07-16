@@ -3,18 +3,21 @@ import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Label } from '@/components/ui/label.jsx'
+import { Checkbox } from '@/components/ui/checkbox.jsx'
 import { Calculator, Percent, TrendingUp, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react'
 import logoMentorial from './assets/logo-mentorial.png'
 import './App.css'
 
 function App() {
   const [formData, setFormData] = useState({
-    comissao: '',
-    imposto: '',
-    taxaCartao: '',
-    outroCusto: '',
-    margemLucro: ''
+    comissao: "",
+    imposto: "",
+    taxaCartao: "",
+    outroCusto: "",
+    margemLucro: ""
   })
+  const [comissaoDisabled, setComissaoDisabled] = useState(false)
+  const [taxaCartaoDisabled, setTaxaCartaoDisabled] = useState(false)
   
   const [resultado, setResultado] = useState(null)
   const [errors, setErrors] = useState({})
@@ -52,19 +55,21 @@ function App() {
     let isValid = true
 
     if (step === 1) {
-      const fieldsToValidate = ['imposto', 'comissao', 'taxaCartao']
+      const fieldsToValidate = [ { id: 'imposto', disabled: false }, { id: 'comissao', disabled: comissaoDisabled }, { id: 'taxaCartao', disabled: taxaCartaoDisabled } ]
       fieldsToValidate.forEach(field => {
-        const value = formData[field].replace(',', '.')
-        const numValue = parseFloat(value)
-        if (!value || value.trim() === '') {
-          newErrors[field] = 'Este campo é obrigatório'
-          isValid = false
-        } else if (isNaN(numValue) || numValue < 0) {
-          newErrors[field] = 'Digite um valor válido'
-          isValid = false
-        } else if (numValue > 100) {
-          newErrors[field] = 'O valor não pode ser maior que 100%'
-          isValid = false
+        if (!field.disabled) {
+          const value = formData[field.id].replace(',', '.')
+          const numValue = parseFloat(value)
+          if (!value || value.trim() === '') {
+            newErrors[field.id] = 'Este campo é obrigatório'
+            isValid = false
+          } else if (isNaN(numValue) || numValue < 0) {
+            newErrors[field.id] = 'Digite um valor válido'
+            isValid = false
+          } else if (numValue > 100) {
+            newErrors[field.id] = 'O valor não pode ser maior que 100%'
+            isValid = false
+          }
         }
       })
     } else if (step === 2) {
@@ -218,6 +223,7 @@ function App() {
                       value={formData[question.id]}
                       onChange={(e) => handleInputChange(question.id, e.target.value)}
                       className={`pl-10 pr-8 ${errors[question.id] ? 'border-red-500' : 'border-gray-300'}`}
+                      disabled={(question.id === 'comissao' && comissaoDisabled) || (question.id === 'taxaCartao' && taxaCartaoDisabled)}
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                       <span className="text-gray-400 text-sm">%</span>
@@ -227,6 +233,29 @@ function App() {
                     <div className="flex items-center space-x-1 text-red-600 text-sm">
                       <AlertCircle className="h-4 w-4" />
                       <span>{errors[question.id]}</span>
+                    </div>
+                  )}
+                  {(question.id === 'comissao' || question.id === 'taxaCartao') && (
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Checkbox
+                        id={`disable-${question.id}`}
+                        checked={question.id === 'comissao' ? comissaoDisabled : taxaCartaoDisabled}
+                        onCheckedChange={(checked) => {
+                          if (question.id === 'comissao') {
+                            setComissaoDisabled(checked)
+                            if (checked) handleInputChange('comissao', '0')
+                          } else {
+                            setTaxaCartaoDisabled(checked)
+                            if (checked) handleInputChange('taxaCartao', '0')
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor={`disable-${question.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {question.id === 'comissao' ? 'Não pago comissão' : 'Não pago taxa de cartão'}
+                      </label>
                     </div>
                   )}
                 </div>
