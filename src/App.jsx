@@ -445,8 +445,8 @@ function App() {
                 </div>
 
                 {/* Cálculo do Preço Final */}
-                <div className="p-4 bg-gray-50 rounded-lg border">
-                  <h4 className="font-medium text-gray-800 mb-2">Calcule o Preço Final:</h4>
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200 shadow-md">
+                  <h4 className="font-bold text-blue-800 mb-2 text-lg">Calcule o Preço Final:</h4>
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="custoInsumo" className="text-sm font-medium text-gray-700">Custo do Insumo / Mercadoria (R$):</Label>
@@ -456,7 +456,7 @@ function App() {
                         placeholder="Ex: 100,00"
                         value={custoInsumo}
                         onChange={(e) => setCustoInsumo(e.target.value)}
-                        className="mt-1"
+                        className="mt-1 bg-white"
                       />
                     </div>
                     <Button onClick={handleCalcularPrecoFinal} className="w-full">
@@ -472,7 +472,7 @@ function App() {
                 </div>
                 <div className="flex justify-center pt-4 space-x-4">
                   <Button onClick={handlePreviousStep} variant="outline">
-                    Voltar 1 página
+                    <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
                   </Button>
                   <Button onClick={resetForm} variant="outline">
                     Recomeçar
