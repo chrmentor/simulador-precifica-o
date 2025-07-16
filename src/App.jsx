@@ -459,7 +459,7 @@ function App() {
                         className="mt-1 bg-white"
                       />
                     </div>
-                    <Button onClick={handleCalcularPrecoFinal} className="w-full">
+                    <Button onClick={handleCalcularPrecoFinal} className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
                       Calcular Preço Final
                     </Button>
                     {precoFinal && (
@@ -518,6 +518,17 @@ function App() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 w-full max-w-2xl mx-auto">
+          <div className="flex justify-center space-x-4 py-4 mb-4">
+            {[1, 2, 3, 4].map((stepNum) => (
+              <div
+                key={stepNum}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-colors duration-300
+                  ${currentStep >= stepNum ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-600'}`}
+              >
+                {stepNum}
+              </div>
+            ))}
+          </div>
           {/* Formulário/Resultados */}
           <Card className="shadow-lg w-full">
             <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
