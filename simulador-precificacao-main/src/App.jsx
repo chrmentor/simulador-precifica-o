@@ -18,7 +18,6 @@ function App() {
   })
   const [comissaoDisabled, setComissaoDisabled] = useState(false)
   const [taxaCartaoDisabled, setTaxaCartaoDisabled] = useState(false)
-  const [outroCustoDisabled, setOutroCustoDisabled] = useState(false)
   
   const [resultado, setResultado] = useState(null)
   const [errors, setErrors] = useState({})
@@ -74,20 +73,21 @@ function App() {
         }
       })
     } else if (step === 2) {
-      if (!outroCustoDisabled) {
-        const value = formData.outroCusto.replace(',', '.')
+      const fieldsToValidate = ['outroCusto']
+      fieldsToValidate.forEach(field => {
+        const value = formData[field].replace(',', '.')
         const numValue = parseFloat(value)
         if (!value || value.trim() === '') {
-          newErrors.outroCusto = 'Este campo é obrigatório'
+          newErrors[field] = 'Este campo é obrigatório'
           isValid = false
         } else if (isNaN(numValue) || numValue < 0) {
-          newErrors.outroCusto = 'Digite um valor válido'
+          newErrors[field] = 'Digite um valor válido'
           isValid = false
         } else if (numValue > 100) {
-          newErrors.outroCusto = 'O valor não pode ser maior que 100%'
+          newErrors[field] = 'O valor não pode ser maior que 100%'
           isValid = false
         }
-      }
+      })
     } else if (step === 3) {
       const fieldsToValidate = ['margemLucro']
       fieldsToValidate.forEach(field => {
@@ -123,13 +123,13 @@ function App() {
   const calcularMarkup = () => {
     if (!validateStep(currentStep)) return
     
-    const imposto = parseFloat(formData.imposto.replace(',', '.')) || 0
-    const comissao = comissaoDisabled ? 0 : (parseFloat(formData.comissao.replace(',', '.')) || 0)
-    const taxaCartao = taxaCartaoDisabled ? 0 : (parseFloat(formData.taxaCartao.replace(',', '.')) || 0)
-    const outroCusto = outroCustoDisabled ? 0 : (parseFloat(formData.outroCusto.replace(',', '.')) || 0)
-    const margemLucro = parseFloat(formData.margemLucro.replace(',', '.')) || 0
+    const comissao = parseFloat(formData.comissao.replace(',', '.'))
+    const imposto = parseFloat(formData.imposto.replace(',', '.'))
+    const taxaCartao = parseFloat(formData.taxaCartao.replace(',', '.'))
+    const outroCusto = parseFloat(formData.outroCusto.replace(',', '.'))
+    const margemLucro = parseFloat(formData.margemLucro.replace(',', '.'))
     
-    const somaPercentuais = imposto + comissao + taxaCartao + outroCusto + margemLucro
+    const somaPercentuais = comissao + imposto + taxaCartao + outroCusto + margemLucro
     
     const markupDivisor = 1 / (1 - (somaPercentuais / 100))
     
@@ -153,14 +153,9 @@ function App() {
       outroCusto: '',
       margemLucro: ''
     })
-    setComissaoDisabled(false)
-    setTaxaCartaoDisabled(false)
-    setOutroCustoDisabled(false)
     setResultado(null)
     setErrors({})
     setCurrentStep(1)
-    setCustoInsumo("")
-    setPrecoFinal(null)
   }
 
   const questionsStep1 = [
@@ -298,7 +293,6 @@ function App() {
                       value={formData[question.id]}
                       onChange={(e) => handleInputChange(question.id, e.target.value)}
                       className={`pl-10 pr-8 ${errors[question.id] ? 'border-red-500' : 'border-gray-300'}`}
-                      disabled={outroCustoDisabled}
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                       <span className="text-gray-400 text-sm">%</span>
@@ -310,22 +304,6 @@ function App() {
                       <span>{errors[question.id]}</span>
                     </div>
                   )}
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Checkbox
-                      id={`disable-${question.id}`}
-                      checked={outroCustoDisabled}
-                      onCheckedChange={(checked) => {
-                        setOutroCustoDisabled(checked)
-                        if (checked) handleInputChange('outroCusto', '0')
-                      }}
-                    />
-                    <label
-                      htmlFor={`disable-${question.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Não tenho mais despesas percentuais variáveis
-                    </label>
-                  </div>
                 </div>
               )
             })}
@@ -571,4 +549,5 @@ function App() {
 }
 
 export default App
+
 
