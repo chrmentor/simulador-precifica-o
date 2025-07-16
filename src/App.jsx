@@ -460,9 +460,9 @@ function App() {
         </div>
 
         {/* Call to Action */}
-        <div className="mt-8 p-6 bg-blue-600 text-white rounded-lg text-center shadow-lg">
+        <div className="mt-8 p-6 bg-blue-600 text-white rounded-lg text-center shadow-lg max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold mb-2">Economize tempo e dinheiro com a Mentorial Contabilidade</h2>
-          <p className="text-blue-100 mb-4">Especialistas em contabilidade para Infoprodutores e afiliados</p>
+          <p className="text-blue-100 mb-4">Há mais de 11 anos ajudando micro e pequenas empresas a reduzir tributos de forma legal e segura.</p>
           <a 
             href="https://api.whatsapp.com/send/?phone=5544997732929&text&type=phone_number&app_absent=0"
             target="_blank"
@@ -479,7 +479,7 @@ function App() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="text-center text-gray-600">
             <p className="text-sm">
-              © 2024 Mentorial Contabilidade - Simulador para Precificação - Markup Divisor
+              © 2025 Mentorial Contabilidade - Simulador para Precificação - Markup Divisor
             </p>
             <p className="text-xs mt-1">
               Ferramenta desenvolvida para auxiliar no cálculo de preços
