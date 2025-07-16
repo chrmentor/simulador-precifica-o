@@ -470,7 +470,10 @@ function App() {
                     )}
                   </div>
                 </div>
-                <div className="flex justify-center pt-4">
+                <div className="flex justify-center pt-4 space-x-4">
+                  <Button onClick={handlePreviousStep} variant="outline">
+                    Voltar 1 página
+                  </Button>
                   <Button onClick={resetForm} variant="outline">
                     Recomeçar
                   </Button>
@@ -518,7 +521,7 @@ function App() {
           {/* Formulário/Resultados */}
           <Card className="shadow-lg w-full">
             <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center space-x-2 pt-4">
                 <Calculator className="h-5 w-5" />
                 <span>
                   {currentStep === 1 && "Dados para Cálculo - Etapa 1/3"}
