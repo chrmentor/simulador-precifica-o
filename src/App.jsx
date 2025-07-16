@@ -19,21 +19,32 @@ function App() {
   const [resultado, setResultado] = useState(null)
   const [errors, setErrors] = useState({})
   const [currentStep, setCurrentStep] = useState(1) // Novo estado para controlar a etapa atual
+  const [custoInsumo, setCustoInsumo] = useState("")
+  const [precoFinal, setPrecoFinal] = useState(null)
 
   const handleInputChange = (field, value) => {
-    const cleanValue = value.replace(/[^\d.,]/g, '')
-    
     setFormData(prev => ({
       ...prev,
-      [field]: cleanValue
+      [field]: value
     }))
     
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [field]: ''
+        [field]: ""
       }))
     }
+  }
+
+  const handleCalcularPrecoFinal = () => {
+    const custo = parseFloat(custoInsumo.replace(",", "."))
+    if (isNaN(custo) || custo <= 0) {
+      alert("Por favor, insira um valor de custo válido.")
+      return
+    }
+    const markupDivisor = parseFloat(resultado.markupDivisor)
+    const preco = (custo * markupDivisor).toFixed(2)
+    setPrecoFinal(preco)
   }
 
   const validateStep = (step) => {
@@ -382,13 +393,30 @@ function App() {
                   </div>
                 </div>
 
-                {/* Fórmula Explicativa */}
+                {/* Cálculo do Preço Final */}
                 <div className="p-4 bg-gray-50 rounded-lg border">
-                  <h4 className="font-medium text-gray-800 mb-2">Como foi calculado:</h4>
-                  <div className="text-sm text-gray-600 space-y-1">
-                    <div>1. Soma dos percentuais: {resultado.somaPercentuais}%</div>
-                    <div>2. Conversão: {resultado.somaPercentuais}% = {(resultado.somaPercentuais/100).toFixed(3)}</div>
-                    <div>3. Cálculo: 1 ÷ (1 - {(resultado.somaPercentuais/100).toFixed(3)}) = {resultado.markupDivisor}</div>
+                  <h4 className="font-medium text-gray-800 mb-2">Calcule o Preço Final:</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="custoInsumo" className="text-sm font-medium text-gray-700">Custo do Insumo / Mercadoria (R$):</Label>
+                      <Input
+                        id="custoInsumo"
+                        type="number"
+                        placeholder="Ex: 100,00"
+                        value={custoInsumo}
+                        onChange={(e) => setCustoInsumo(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <Button onClick={handleCalcularPrecoFinal} className="w-full">
+                      Calcular Preço Final
+                    </Button>
+                    {precoFinal && (
+                      <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <span className="font-semibold text-blue-800">Preço Final Sugerido:</span>
+                        <span className="font-bold text-blue-800 ml-2">R$ {precoFinal}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex justify-center pt-4">
