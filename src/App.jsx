@@ -518,7 +518,7 @@ function App() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 w-full max-w-2xl mx-auto">
-          <div className="flex justify-center space-x-4 -mt-24 -mb-24">
+          <div className="flex justify-center space-x-4 -mt-12 mb-4">
             {[1, 2, 3, 4].map((stepNum) => (
               <div
                 key={stepNum}
