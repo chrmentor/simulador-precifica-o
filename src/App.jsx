@@ -411,7 +411,7 @@ function App() {
                   <div className="text-center mt-4 flex flex-col items-center">
                     <ArrowDown className="h-8 w-8 text-blue-500 animate-bounce" />
                     <p className="text-blue-700 font-semibold mt-2">
-                      Agora, insira o custo do seu insumo ou mercadoria abaixo para calcular o preço final!
+                      Agora, insira a soma dos custo dos seus insumos ou mercadorias, no bloco abaixo para calcular o preço final automaticamente!
                     </p>
                   </div>
                 </div>
@@ -445,10 +445,7 @@ function App() {
                     </div>
                   </div>
 
-                  <div className="flex justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <span className="font-semibold text-blue-800">Total dos Percentuais:</span>
-                    <span className="font-bold text-blue-800">{resultado.somaPercentuais}%</span>
-                  </div>
+
                 </div>
 
                 {/* Cálculo do Preço Final */}
