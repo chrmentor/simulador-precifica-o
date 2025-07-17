@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input.jsx'
 import { Label } from '@/components/ui/label.jsx'
 import { Checkbox } from '@/components/ui/checkbox.jsx'
-import { Calculator, Percent, TrendingUp, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react'
+import { Calculator, Percent, TrendingUp, AlertCircle, ArrowLeft, ArrowRight, ArrowDown } from 'lucide-react'
 import logoMentorial from './assets/logo-mentorial.png'
 import './App.css'
 
@@ -406,6 +406,13 @@ function App() {
                   </div>
                   <div className="text-sm text-green-600 mt-2">
                     Multiplique seus custos por este valor
+                  </div>
+                  {/* Nova indicação para o próximo passo */}
+                  <div className="text-center mt-4 flex flex-col items-center">
+                    <ArrowDown className="h-8 w-8 text-blue-500 animate-bounce" />
+                    <p className="text-blue-700 font-semibold mt-2">
+                      Agora, insira o custo do seu insumo ou mercadoria abaixo para calcular o preço final!
+                    </p>
                   </div>
                 </div>
 
