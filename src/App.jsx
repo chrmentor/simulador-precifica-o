@@ -396,26 +396,6 @@ function App() {
           <CardContent className="p-6 md:p-8">
             {resultado ? (
               <div className="space-y-6">
-                {/* Markup Divisor Principal */}
-                <div className="text-center p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border-2 border-green-200">
-                  <div className="text-sm text-green-700 font-medium mb-2">
-                    SEU MARKUP DIVISOR É:
-                  </div>
-                  <div className="text-4xl font-bold text-green-800">
-                    {resultado.markupDivisor}
-                  </div>
-                  <div className="text-sm text-green-600 mt-2">
-                    Multiplique seus custos por este valor
-                  </div>
-                  {/* Nova indicação para o próximo passo */}
-                  <div className="text-center mt-4 flex flex-col items-center">
-                    <ArrowDown className="h-8 w-8 text-blue-500 animate-bounce" />
-                    <p className="text-blue-700 font-semibold mt-2">
-                      Agora, insira a soma dos custo dos seus insumos ou mercadorias, no bloco abaixo para calcular o preço final automaticamente!
-                    </p>
-                  </div>
-                </div>
-
                 {/* Breakdown dos Percentuais */}
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-800 border-b pb-2">
@@ -446,6 +426,26 @@ function App() {
                   </div>
 
 
+                </div>
+
+                {/* Markup Divisor Principal */}
+                <div className="text-center p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border-2 border-green-200">
+                  <div className="text-sm text-green-700 font-medium mb-2">
+                    SEU MARKUP DIVISOR É:
+                  </div>
+                  <div className="text-4xl font-bold text-green-800">
+                    {resultado.markupDivisor}
+                  </div>
+                  <div className="text-sm text-green-600 mt-2">
+                    Multiplique seus custos por este valor
+                  </div>
+                  {/* Nova indicação para o próximo passo */}
+                  <div className="text-center mt-4 flex flex-col items-center">
+                    <ArrowDown className="h-8 w-8 text-blue-500 animate-bounce" />
+                    <p className="text-blue-700 font-semibold mt-2">
+                      Agora, insira a soma dos custo dos seus insumos ou mercadorias, no bloco abaixo para calcular o preço final automaticamente!
+                    </p>
+                  </div>
                 </div>
 
                 {/* Cálculo do Preço Final */}
