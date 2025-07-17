@@ -449,7 +449,7 @@ function App() {
                 </div>
 
                 {/* Cálculo do Preço Final */}
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200 shadow-md">
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200 shadow-md animate-pulse-custom">
                   <h4 className="font-bold text-blue-800 mb-2 text-lg">Calcule o Preço Final:</h4>
                   <div className="space-y-4">
                     <div>
