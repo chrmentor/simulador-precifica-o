@@ -480,36 +480,67 @@ function App() {
                 {precoFinal && (
                   <div className="p-4 bg-white rounded-lg shadow-md">
                     <h4 className="font-bold text-gray-800 mb-4 text-lg text-center">Composição do Preço de Venda (100%):</h4>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <PieChart>
-                        <Pie
-                          data={[
-                            { name: 'Impostos', value: (resultado.imposto / 100) * parseFloat(precoFinal) },
-                            { name: 'Comissão', value: (resultado.comissao / 100) * parseFloat(precoFinal) },
-                            { name: 'Taxa Cartão', value: (resultado.taxaCartao / 100) * parseFloat(precoFinal) },
-                            { name: 'Outro Custo', value: (resultado.outroCusto / 100) * parseFloat(precoFinal) },
-                            { name: 'Margem de Lucro', value: (resultado.margemLucro / 100) * parseFloat(precoFinal) },
-                            { name: 'Custo do Insumo', value: parseFloat(custoInsumo.replace(",", ".")) }
-                          ]}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                        >
-                          <Cell key="cell-0" fill="#4299E1" /> {/* Azul para Impostos */}
-                          <Cell key="cell-1" fill="#38B2AC" /> {/* Verde-água para Comissão */}
-                          <Cell key="cell-2" fill="#F6AD55" /> {/* Laranja para Taxa Cartão */}
-                          <Cell key="cell-3" fill="#ED8936" /> {/* Laranja escuro para Outro Custo */}
-                          <Cell key="cell-4" fill="#667EEA" /> {/* Roxo para Margem de Lucro */}
-                          <Cell key="cell-5" fill="#48BB78" /> {/* Verde para Custo do Insumo */}
-                        </Pie>
-                        <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <div className="flex items-center justify-center gap-8">
+                      {/* Legendas à esquerda */}
+                      <div className="flex flex-col space-y-3 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#4299E1' }}></div>
+                          <span>Impostos: {resultado.imposto.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#38B2AC' }}></div>
+                          <span>Comissão: {resultado.comissao.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#F6AD55' }}></div>
+                          <span>Taxa Cartão: {resultado.taxaCartao.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#ED8936' }}></div>
+                          <span>Outro Custo: {resultado.outroCusto.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#667EEA' }}></div>
+                          <span>Margem de Lucro: {resultado.margemLucro.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#48BB78' }}></div>
+                          <span>Custo do Insumo: {((parseFloat(custoInsumo.replace(",", ".")) / parseFloat(precoFinal)) * 100).toFixed(1)}%</span>
+                        </div>
+                      </div>
+                      
+                      {/* Gráfico à direita */}
+                      <div className="flex-shrink-0">
+                        <ResponsiveContainer width={300} height={300}>
+                          <PieChart>
+                            <Pie
+                              data={[
+                                { name: 'Impostos', value: (resultado.imposto / 100) * parseFloat(precoFinal) },
+                                { name: 'Comissão', value: (resultado.comissao / 100) * parseFloat(precoFinal) },
+                                { name: 'Taxa Cartão', value: (resultado.taxaCartao / 100) * parseFloat(precoFinal) },
+                                { name: 'Outro Custo', value: (resultado.outroCusto / 100) * parseFloat(precoFinal) },
+                                { name: 'Margem de Lucro', value: (resultado.margemLucro / 100) * parseFloat(precoFinal) },
+                                { name: 'Custo do Insumo', value: parseFloat(custoInsumo.replace(",", ".")) }
+                              ]}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={120}
+                              fill="#8884d8"
+                              dataKey="value"
+                              label={false}
+                            >
+                              <Cell key="cell-0" fill="#4299E1" />
+                              <Cell key="cell-1" fill="#38B2AC" />
+                              <Cell key="cell-2" fill="#F6AD55" />
+                              <Cell key="cell-3" fill="#ED8936" />
+                              <Cell key="cell-4" fill="#667EEA" />
+                              <Cell key="cell-5" fill="#48BB78" />
+                            </Pie>
+                            <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
                   </div>
                 )}
 
