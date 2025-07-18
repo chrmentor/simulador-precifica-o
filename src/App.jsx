@@ -121,6 +121,27 @@ function App() {
     setCurrentStep(prev => prev - 1)
   }
 
+  const handleStepClick = (stepNum) => {
+    if (stepNum < currentStep) {
+      // Sempre permitir voltar para etapas anteriores
+      setCurrentStep(stepNum)
+    } else if (stepNum > currentStep) {
+      // Validar a etapa atual antes de avançar
+      if (validateStep(currentStep)) {
+        setCurrentStep(stepNum)
+      }
+    } else if (stepNum === currentStep) {
+      // Se clicar na etapa atual, validar e permanecer ou avançar se for o caso
+      if (validateStep(currentStep)) {
+        if (stepNum === 4 && resultado) {
+          setCurrentStep(stepNum)
+        } else if (stepNum < 4) {
+          setCurrentStep(stepNum)
+        }
+      }
+    }
+  }
+
   const calcularMarkup = () => {
     if (!validateStep(currentStep)) return
     
@@ -596,13 +617,17 @@ function App() {
         <div className="grid grid-cols-1 gap-8 w-full max-w-2xl mx-auto">
           <div className="flex justify-center space-x-4 -mt-12 mb-4">
             {[1, 2, 3, 4].map((stepNum) => (
-              <div
+              <button
                 key={stepNum}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-colors duration-300
-                  ${currentStep >= stepNum ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-600'}`}
+                onClick={() => handleStepClick(stepNum)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
+                  ${currentStep >= stepNum ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}
+                  ${stepNum <= 3 || (stepNum === 4 && resultado) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                disabled={stepNum > 3 && !resultado}
+                title={`Ir para etapa ${stepNum}`}
               >
                 {stepNum}
-              </div>
+              </button>
             ))}
           </div>
           {/* Formulário/Resultados */}
