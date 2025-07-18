@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input.jsx'
 import { Label } from '@/components/ui/label.jsx'
 import { Checkbox } from '@/components/ui/checkbox.jsx'
 import { Calculator, Percent, TrendingUp, AlertCircle, ArrowLeft, ArrowRight, ArrowDown } from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import logoMentorial from './assets/logo-mentorial.png'
 import './App.css'
 
@@ -474,6 +475,44 @@ function App() {
                     )}
                   </div>
                 </div>
+
+                {/* Gráfico de Pizza */}
+                {precoFinal && (
+                  <div className="p-4 bg-white rounded-lg shadow-md">
+                    <h4 className="font-bold text-gray-800 mb-4 text-lg text-center">Composição do Preço de Venda (100%):</h4>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: 'Impostos', value: (resultado.imposto / 100) * parseFloat(precoFinal) },
+                            { name: 'Comissão', value: (resultado.comissao / 100) * parseFloat(precoFinal) },
+                            { name: 'Taxa Cartão', value: (resultado.taxaCartao / 100) * parseFloat(precoFinal) },
+                            { name: 'Outro Custo', value: (resultado.outroCusto / 100) * parseFloat(precoFinal) },
+                            { name: 'Margem de Lucro', value: (resultado.margemLucro / 100) * parseFloat(precoFinal) },
+                            { name: 'Custo do Insumo', value: parseFloat(custoInsumo.replace(",", ".")) }
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                        >
+                          <Cell key="cell-0" fill="#4299E1" /> {/* Azul para Impostos */}
+                          <Cell key="cell-1" fill="#38B2AC" /> {/* Verde-água para Comissão */}
+                          <Cell key="cell-2" fill="#F6AD55" /> {/* Laranja para Taxa Cartão */}
+                          <Cell key="cell-3" fill="#ED8936" /> {/* Laranja escuro para Outro Custo */}
+                          <Cell key="cell-4" fill="#667EEA" /> {/* Roxo para Margem de Lucro */}
+                          <Cell key="cell-5" fill="#48BB78" /> {/* Verde para Custo do Insumo */}
+                        </Pie>
+                        <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
                 <div className="flex justify-center pt-4 space-x-4">
                   <Button onClick={handlePreviousStep} variant="outline">
                     <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
