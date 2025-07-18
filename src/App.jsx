@@ -480,38 +480,40 @@ function App() {
                 {precoFinal && (
                   <div className="p-4 bg-white rounded-lg shadow-md">
                     <h4 className="font-bold text-gray-800 mb-4 text-lg text-center">Composição do Preço de Venda (100%):</h4>
-                    <div className="flex items-center justify-center gap-8">
-                      {/* Legendas à esquerda */}
-                      <div className="flex flex-col space-y-3 text-sm">
+                    
+                    {/* Layout responsivo: lado a lado no desktop, empilhado no mobile */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-center md:gap-8 space-y-4 md:space-y-0">
+                      {/* Legendas */}
+                      <div className="flex flex-col space-y-2 text-xs md:text-sm order-2 md:order-1">
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#4299E1' }}></div>
+                          <div className="w-3 h-3 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#4299E1' }}></div>
                           <span>Impostos: {resultado.imposto.toFixed(1)}%</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#38B2AC' }}></div>
+                          <div className="w-3 h-3 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#38B2AC' }}></div>
                           <span>Comissão: {resultado.comissao.toFixed(1)}%</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#F6AD55' }}></div>
+                          <div className="w-3 h-3 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#F6AD55' }}></div>
                           <span>Taxa Cartão: {resultado.taxaCartao.toFixed(1)}%</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#ED8936' }}></div>
+                          <div className="w-3 h-3 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#ED8936' }}></div>
                           <span>Outro Custo: {resultado.outroCusto.toFixed(1)}%</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#667EEA' }}></div>
+                          <div className="w-3 h-3 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#667EEA' }}></div>
                           <span>Margem de Lucro: {resultado.margemLucro.toFixed(1)}%</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#48BB78' }}></div>
+                          <div className="w-3 h-3 md:w-4 md:h-4 rounded-full" style={{ backgroundColor: '#48BB78' }}></div>
                           <span>Custo do Insumo: {((parseFloat(custoInsumo.replace(",", ".")) / parseFloat(precoFinal)) * 100).toFixed(1)}%</span>
                         </div>
                       </div>
                       
-                      {/* Gráfico à direita */}
-                      <div className="flex-shrink-0">
-                        <ResponsiveContainer width={300} height={300}>
+                      {/* Gráfico */}
+                      <div className="flex-shrink-0 flex justify-center order-1 md:order-2">
+                        <ResponsiveContainer width={250} height={250} className="md:!w-[300px] md:!h-[300px]">
                           <PieChart>
                             <Pie
                               data={[
@@ -524,7 +526,7 @@ function App() {
                               ]}
                               cx="50%"
                               cy="50%"
-                              outerRadius={120}
+                              outerRadius={100}
                               fill="#8884d8"
                               dataKey="value"
                               label={false}
