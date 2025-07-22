@@ -486,8 +486,11 @@ function App() {
                 </div>
               )
             })}
-            <div className="space-y-2">
-              <Label htmlFor="custoInsumo" className="text-sm font-medium text-gray-700">Custo do Insumo / Mercadoria (R$):</Label>
+            <div className="space-y-2 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+              <Label htmlFor="custoInsumo" className="text-base font-semibold text-blue-800">Custo do Insumo / Mercadoria (R$):</Label>
+              <p className="text-sm text-blue-700 mb-2">
+                Aqui você coloca o valor do custo de aquisição dos insumos ou mercadorias que compõe seu produto!
+              </p>
               <Input
                 id="custoInsumo"
                 type="number"
