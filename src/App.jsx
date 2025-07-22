@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label.jsx'
 import { Checkbox } from '@/components/ui/checkbox.jsx'
 import { Calculator, Percent, TrendingUp, AlertCircle, ArrowLeft, ArrowRight, ArrowDown } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import emailjs from '@emailjs/browser'
 import logoMentorial from './assets/logo-mentorial.png'
 import './App.css'
 
@@ -152,8 +153,39 @@ function App() {
     setCurrentStep(prev => prev - 1)
   }
 
-  const handleProceedToResults = () => {
+  const handleProceedToResults = async () => {
     if (validateStep(currentStep)) {
+      try {
+        // Preparar os dados para o EmailJS
+        const templateParams = {
+          nome: userData.nome,
+          whatsapp: userData.whatsapp,
+          imposto: formData.imposto,
+          comissao: comissaoDisabled ? '0' : formData.comissao,
+          taxaCartao: taxaCartaoDisabled ? '0' : formData.taxaCartao,
+          outroCusto: outroCustoDisabled ? '0' : formData.outroCusto,
+          margemLucro: formData.margemLucro,
+          markupCalculado: resultado?.markupDivisor || 'N/A',
+          custoInsumo: custoInsumo || 'Não informado',
+          precoVenda: precoFinal ? `R$ ${precoFinal.toFixed(2)}` : 'Não calculado',
+          data: new Date().toLocaleDateString('pt-BR'),
+          hora: new Date().toLocaleTimeString('pt-BR')
+        }
+
+        // Enviar e-mail via EmailJS
+        await emailjs.send(
+          'service_ej7aspa', // Service ID
+          'template_5cq45iw', // Template ID
+          templateParams,
+          '8L7JH3KzNJP6q32yB' // Public Key
+        )
+
+        console.log('E-mail enviado com sucesso!')
+      } catch (error) {
+        console.error('Erro ao enviar e-mail:', error)
+        // Continuar mesmo se o e-mail falhar
+      }
+
       setCurrentStep(5) // Vai para a página de resultados
     }
   }
