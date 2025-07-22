@@ -451,19 +451,26 @@ function App() {
       case 3:
         return (
           <CardContent className="p-6 md:p-8 space-y-6">
+            <div className="text-center space-y-2 mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+              <TrendingUp className="h-8 w-8 mx-auto text-yellow-600" />
+              <h3 className="text-xl font-bold text-yellow-800">Momento Crucial!</h3>
+              <p className="text-yellow-700">
+                Agora, defina sua margem de lucro desejada e o custo do insumo para calcular o preço ideal do seu produto.
+              </p>
+            </div>
             {questionsStep3.map((question) => {
               const Icon = question.icon
               return (
-                <div key={question.id} className="space-y-2">
+                <div key={question.id} className="space-y-2 p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm">
                   <Label 
                     htmlFor={question.id}
-                    className="text-sm font-medium text-gray-700"
+                    className="text-base font-semibold text-green-800"
                   >
                     {question.label}
                   </Label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Icon className="h-4 w-4 text-gray-400" />
+                      <Icon className="h-4 w-4 text-green-400" />
                     </div>
                     <Input
                       id={question.id}
@@ -471,10 +478,10 @@ function App() {
                       placeholder={question.placeholder}
                       value={formData[question.id]}
                       onChange={(e) => handleInputChange(question.id, e.target.value)}
-                      className={`pl-10 pr-8 ${errors[question.id] ? 'border-red-500' : 'border-gray-300'}`}
+                      className={`pl-10 pr-8 bg-white ${errors[question.id] ? 'border-red-500' : 'border-green-300'}`}
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-400 text-sm">%</span>
+                      <span className="text-green-400 text-sm">%</span>
                     </div>
                   </div>
                   {errors[question.id] && (
