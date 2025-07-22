@@ -109,21 +109,30 @@ function App() {
         }
       }
     } else if (step === 3) {
-      const fieldsToValidate = ['margemLucro']
+      const fieldsToValidate = ["margemLucro"]
       fieldsToValidate.forEach(field => {
-        const value = formData[field].replace(',', '.')
+        const value = formData[field].replace(",", ".")
         const numValue = parseFloat(value)
-        if (!value || value.trim() === '') {
-          newErrors[field] = 'Este campo é obrigatório'
+        if (!value || value.trim() === "") {
+          newErrors[field] = "Este campo é obrigatório"
           isValid = false
         } else if (isNaN(numValue) || numValue < 0) {
-          newErrors[field] = 'Digite um valor válido'
+          newErrors[field] = "Digite um valor válido"
           isValid = false
         } else if (numValue > 100) {
-          newErrors[field] = 'O valor não pode ser maior que 100%'
+          newErrors[field] = "O valor não pode ser maior que 100%"
           isValid = false
         }
       })
+      const custo = custoInsumo.replace(",", ".")
+      const numCusto = parseFloat(custo)
+      if (!custo || custo.trim() === "") {
+        newErrors.custoInsumo = "Este campo é obrigatório"
+        isValid = false
+      } else if (isNaN(numCusto) || numCusto <= 0) {
+        newErrors.custoInsumo = "Digite um valor válido"
+        isValid = false
+      }
     } else if (step === 4) {
       // Validação para a nova etapa de coleta de dados
       if (!userData.nome || userData.nome.trim() === '') {
@@ -155,6 +164,11 @@ function App() {
 
   const handleProceedToResults = async () => {
     if (validateStep(currentStep)) {
+      const custo = parseFloat(custoInsumo.replace(",", "."))
+      const markupDivisor = parseFloat(resultado.markupDivisor)
+      const preco = (custo * markupDivisor).toFixed(2)
+      setPrecoFinal(preco)
+
       try {
         // Preparar os dados para o EmailJS
         const templateParams = {
@@ -167,7 +181,7 @@ function App() {
           margemLucro: formData.margemLucro,
           markupCalculado: resultado?.markupDivisor || 'N/A',
           custoInsumo: custoInsumo || 'Não informado',
-          precoVenda: precoFinal ? `R$ ${precoFinal.toFixed(2)}` : 'Não calculado',
+          precoVenda: `R$ ${preco}`,
           data: new Date().toLocaleDateString('pt-BR'),
           hora: new Date().toLocaleTimeString('pt-BR')
         }
@@ -472,6 +486,23 @@ function App() {
                 </div>
               )
             })}
+            <div className="space-y-2">
+              <Label htmlFor="custoInsumo" className="text-sm font-medium text-gray-700">Custo do Insumo / Mercadoria (R$):</Label>
+              <Input
+                id="custoInsumo"
+                type="number"
+                placeholder="Ex: 100,00"
+                value={custoInsumo}
+                onChange={(e) => setCustoInsumo(e.target.value)}
+                className={`mt-1 bg-white ${errors.custoInsumo ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors.custoInsumo && (
+                <div className="flex items-center space-x-1 text-red-600 text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{errors.custoInsumo}</span>
+                </div>
+              )}
+            </div>
             <div className="flex justify-between pt-4">
               <Button onClick={handlePreviousStep} variant="outline">
                 <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
@@ -606,41 +637,10 @@ function App() {
                   <div className="text-sm text-green-600 mt-2">
                     Multiplique seus custos por este valor
                   </div>
-                  {/* Nova indicação para o próximo passo */}
-                  <div className="text-center mt-4 flex flex-col items-center">
-                    <ArrowDown className="h-8 w-8 text-blue-500 animate-bounce" />
-                    <p className="text-blue-700 font-semibold mt-2">
-                      Agora, insira a soma dos custo dos seus insumos ou mercadorias, no bloco abaixo para calcular o preço final automaticamente!
-                    </p>
-                  </div>
+
                 </div>
 
-                {/* Cálculo do Preço Final */}
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200 shadow-md animate-pulse-custom">
-                  <h4 className="font-bold text-blue-800 mb-2 text-lg">Calcule o Preço Final:</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="custoInsumo" className="text-sm font-medium text-gray-700">Custo do Insumo / Mercadoria (R$):</Label>
-                      <Input
-                        id="custoInsumo"
-                        type="number"
-                        placeholder="Ex: 100,00"
-                        value={custoInsumo}
-                        onChange={(e) => setCustoInsumo(e.target.value)}
-                        className="mt-1 bg-white"
-                      />
-                    </div>
-                    <Button onClick={handleCalcularPrecoFinal} className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                      Calcular Preço Final
-                    </Button>
-                    {precoFinal && (
-                      <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                        <span className="font-semibold text-blue-800">Preço Final Sugerido:</span>
-                        <span className="font-bold text-blue-800 ml-2">R$ {precoFinal}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+
 
                 {/* Gráfico de Pizza */}
                 {precoFinal && (
@@ -690,8 +690,8 @@ function App() {
                                 { name: 'Margem de Lucro', value: (resultado.margemLucro / 100) * parseFloat(precoFinal) },
                                 { name: 'Custo do Insumo', value: parseFloat(custoInsumo.replace(",", ".")) }
                               ]}
-                              cx="50%"
-                              cy="50%"
+                              cx={"50%"}
+                              cy={"50%"}
                               outerRadius={100}
                               fill="#8884d8"
                               dataKey="value"
@@ -833,4 +833,6 @@ function App() {
 }
 
 export default App
+
+
 
