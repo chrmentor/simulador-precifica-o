@@ -26,9 +26,27 @@ function App() {
   const [currentStep, setCurrentStep] = useState(1) // Novo estado para controlar a etapa atual
   const [custoInsumo, setCustoInsumo] = useState("")
   const [precoFinal, setPrecoFinal] = useState(null)
+  const [userData, setUserData] = useState({
+    nome: "",
+    whatsapp: ""
+  })
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+    
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }))
+    }
+  }
+
+  const handleUserDataChange = (field, value) => {
+    setUserData(prev => ({
       ...prev,
       [field]: value
     }))
@@ -105,6 +123,19 @@ function App() {
           isValid = false
         }
       })
+    } else if (step === 4) {
+      // Validação para a nova etapa de coleta de dados
+      if (!userData.nome || userData.nome.trim() === '') {
+        newErrors.nome = 'Nome é obrigatório'
+        isValid = false
+      }
+      if (!userData.whatsapp || userData.whatsapp.trim() === '') {
+        newErrors.whatsapp = 'WhatsApp é obrigatório'
+        isValid = false
+      } else if (!/^\d{10,11}$/.test(userData.whatsapp.replace(/\D/g, ''))) {
+        newErrors.whatsapp = 'Digite um número de WhatsApp válido'
+        isValid = false
+      }
     }
 
     setErrors(newErrors)
@@ -121,6 +152,12 @@ function App() {
     setCurrentStep(prev => prev - 1)
   }
 
+  const handleProceedToResults = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(5) // Vai para a página de resultados
+    }
+  }
+
   const handleStepClick = (stepNum) => {
     if (stepNum < currentStep) {
       // Sempre permitir voltar para etapas anteriores
@@ -133,9 +170,9 @@ function App() {
     } else if (stepNum === currentStep) {
       // Se clicar na etapa atual, validar e permanecer ou avançar se for o caso
       if (validateStep(currentStep)) {
-        if (stepNum === 4 && resultado) {
+        if (stepNum === 5 && resultado) {
           setCurrentStep(stepNum)
-        } else if (stepNum < 4) {
+        } else if (stepNum < 5) {
           setCurrentStep(stepNum)
         }
       }
@@ -164,7 +201,7 @@ function App() {
       somaPercentuais,
       markupDivisor: markupDivisor.toFixed(2)
     })
-    setCurrentStep(4) // Vai para a página de resultados
+    setCurrentStep(4) // Vai para a nova página de coleta de dados
   }
 
   const resetForm = () => {
@@ -183,6 +220,10 @@ function App() {
     setCurrentStep(1)
     setCustoInsumo("")
     setPrecoFinal(null)
+    setUserData({
+      nome: "",
+      whatsapp: ""
+    })
   }
 
   const questionsStep1 = [
@@ -415,6 +456,78 @@ function App() {
         )
       case 4:
         return (
+          <CardContent className="p-6 md:p-8 space-y-6">
+            {/* Texto persuasivo */}
+            <div className="text-center space-y-4 mb-6">
+              <div className="text-2xl font-bold text-green-600">
+                🎉 Parabéns! Seu Markup foi calculado!
+              </div>
+              <div className="text-lg text-gray-700">
+                Para visualizar seu cálculo e também receber um relatório mais completo por WhatsApp gratuitamente, preencha os dados abaixo:
+              </div>
+              <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+                💡 <strong>Bônus:</strong> Você receberá dicas exclusivas de precificação e estratégias para aumentar sua margem de lucro!
+              </div>
+            </div>
+
+            {/* Campos de coleta */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="nome" className="text-sm font-medium text-gray-700">
+                  Seu nome completo:
+                </Label>
+                <Input
+                  id="nome"
+                  type="text"
+                  placeholder="Digite seu nome completo"
+                  value={userData.nome}
+                  onChange={(e) => handleUserDataChange('nome', e.target.value)}
+                  className={`${errors.nome ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {errors.nome && (
+                  <div className="flex items-center space-x-1 text-red-600 text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{errors.nome}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp" className="text-sm font-medium text-gray-700">
+                  Seu WhatsApp (apenas números):
+                </Label>
+                <Input
+                  id="whatsapp"
+                  type="text"
+                  placeholder="Ex: 11999999999"
+                  value={userData.whatsapp}
+                  onChange={(e) => handleUserDataChange('whatsapp', e.target.value.replace(/\D/g, ''))}
+                  className={`${errors.whatsapp ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {errors.whatsapp && (
+                  <div className="flex items-center space-x-1 text-red-600 text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{errors.whatsapp}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-4">
+              <Button onClick={handlePreviousStep} variant="outline">
+                <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
+              </Button>
+              <Button 
+                onClick={handleProceedToResults}
+                className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+              >
+                Ver Meu Resultado 🚀
+              </Button>
+            </div>
+          </CardContent>
+        )
+      case 5:
+        return (
           <CardContent className="p-6 md:p-8">
             {resultado ? (
               <div className="space-y-6">
@@ -616,13 +729,13 @@ function App() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 w-full max-w-2xl mx-auto">
           <div className="flex justify-center space-x-4 -mt-12 mb-4">
-            {[1, 2, 3, 4].map((stepNum) => (
+            {[1, 2, 3, 4, 5].map((stepNum) => (
               <button
                 key={stepNum}
                 onClick={() => handleStepClick(stepNum)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
                   ${currentStep >= stepNum ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}
-                  ${stepNum <= 3 || (stepNum === 4 && resultado) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                  ${stepNum <= 3 || (stepNum >= 4 && resultado) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
                 disabled={stepNum > 3 && !resultado}
                 title={`Ir para etapa ${stepNum}`}
               >
@@ -639,14 +752,16 @@ function App() {
                   {currentStep === 1 && "Dados para Cálculo - Etapa 1/3"}
                   {currentStep === 2 && "Dados para Cálculo - Etapa 2/3"}
                   {currentStep === 3 && "Dados para Cálculo - Etapa 3/3"}
-                  {currentStep === 4 && "Resultado do Cálculo"}
+                  {currentStep === 4 && "Quase lá! Seus dados para o relatório"}
+                  {currentStep === 5 && "Resultado do Cálculo"}
                 </span>
               </CardTitle>
               <CardDescription className="text-blue-100">
                 {currentStep === 1 && "Preencha os percentuais abaixo para calcular seu markup divisor"}
                 {currentStep === 2 && "Preencha o percentual de outros custos/despesas"}
                 {currentStep === 3 && "Preencha o percentual de margem de lucro desejada"}
-                {currentStep === 4 && "Seu markup divisor calculado"}
+                {currentStep === 4 && "Para receber seu resultado e relatório completo"}
+                {currentStep === 5 && "Seu markup divisor calculado"}
               </CardDescription>
             </CardHeader>
             {renderStepContent()}
