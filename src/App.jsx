@@ -742,16 +742,16 @@ function App() {
                   </div>
                 )}
 
-                <div className="flex justify-center pt-4 space-x-4">
-                  <Button onClick={handlePreviousStep} variant="outline">
+                <div className="flex flex-col sm:flex-row justify-center pt-4 gap-3 sm:gap-4">
+                  <Button onClick={handlePreviousStep} variant="outline" className="w-full sm:w-auto">
                     <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
                   </Button>
-                  <Button onClick={resetForm} variant="outline">
+                  <Button onClick={resetForm} variant="outline" className="w-full sm:w-auto">
                     Recomeçar
                   </Button>
                   <Button 
                     onClick={() => window.open('https://wa.me/5544997732929?text=Olá! Quero meu relatório de precificação completo!', '_blank')}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
                   >
                     📄 Solicitar Relatório Completo em PDF
                   </Button>
