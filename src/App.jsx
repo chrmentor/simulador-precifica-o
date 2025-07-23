@@ -749,6 +749,12 @@ function App() {
                   <Button onClick={resetForm} variant="outline">
                     Recomeçar
                   </Button>
+                  <Button 
+                    onClick={() => window.open('https://wa.me/5544997732929?text=Olá! Quero meu relatório de precificação completo!', '_blank')}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    📄 Solicitar Relatório Completo em PDF
+                  </Button>
                 </div>
               </div>
             ) : (
