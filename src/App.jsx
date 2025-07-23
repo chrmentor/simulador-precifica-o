@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label.jsx'
 import { Checkbox } from '@/components/ui/checkbox.jsx'
 import { Calculator, Percent, TrendingUp, AlertCircle, ArrowLeft, ArrowRight, ArrowDown } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import emailjs from '@emailjs/browser'
 import logoMentorial from './assets/logo-mentorial.png'
 import './App.css'
 
@@ -26,9 +27,27 @@ function App() {
   const [currentStep, setCurrentStep] = useState(1) // Novo estado para controlar a etapa atual
   const [custoInsumo, setCustoInsumo] = useState("")
   const [precoFinal, setPrecoFinal] = useState(null)
+  const [userData, setUserData] = useState({
+    nome: "",
+    whatsapp: ""
+  })
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+    
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ""
+      }))
+    }
+  }
+
+  const handleUserDataChange = (field, value) => {
+    setUserData(prev => ({
       ...prev,
       [field]: value
     }))
@@ -105,6 +124,28 @@ function App() {
           isValid = false
         }
       })
+      const custo = custoInsumo.replace(',', '.')
+      const numCusto = parseFloat(custo)
+      if (!custo || custo.trim() === '') {
+        newErrors.custoInsumo = 'Este campo é obrigatório'
+        isValid = false
+      } else if (isNaN(numCusto) || numCusto <= 0) {
+        newErrors.custoInsumo = 'Digite um valor válido'
+        isValid = false
+      }
+    } else if (step === 4) {
+      // Validação para a nova etapa de coleta de dados
+      if (!userData.nome || userData.nome.trim() === '') {
+        newErrors.nome = 'Nome é obrigatório'
+        isValid = false
+      }
+      if (!userData.whatsapp || userData.whatsapp.trim() === '') {
+        newErrors.whatsapp = 'WhatsApp é obrigatório'
+        isValid = false
+      } else if (!/^\d{10,11}$/.test(userData.whatsapp.replace(/\D/g, ''))) {
+        newErrors.whatsapp = 'Digite um número de WhatsApp válido'
+        isValid = false
+      }
     }
 
     setErrors(newErrors)
@@ -121,6 +162,48 @@ function App() {
     setCurrentStep(prev => prev - 1)
   }
 
+  const handleProceedToResults = async () => {
+    if (validateStep(currentStep)) {
+      const custo = parseFloat(custoInsumo.replace(",", "."))
+      const markupDivisor = parseFloat(resultado.markupDivisor)
+      const preco = (custo * markupDivisor).toFixed(2)
+      setPrecoFinal(preco)
+
+      try {
+        // Preparar os dados para o EmailJS
+        const templateParams = {
+          nome: userData.nome,
+          whatsapp: userData.whatsapp,
+          imposto: formData.imposto,
+          comissao: comissaoDisabled ? '0' : formData.comissao,
+          taxaCartao: taxaCartaoDisabled ? '0' : formData.taxaCartao,
+          outroCusto: outroCustoDisabled ? '0' : formData.outroCusto,
+          margemLucro: formData.margemLucro,
+          markupCalculado: resultado?.markupDivisor || 'N/A',
+          custoInsumo: custoInsumo || 'Não informado',
+          precoVenda: `R$ ${preco}`,
+          data: new Date().toLocaleDateString('pt-BR'),
+          hora: new Date().toLocaleTimeString('pt-BR')
+        }
+
+        // Enviar e-mail via EmailJS
+        await emailjs.send(
+          'service_ej7aspa', // Service ID
+          'template_5cq45iw', // Template ID
+          templateParams,
+          '8L7JH3KzNJP6q32yB' // Public Key
+        )
+
+        console.log('E-mail enviado com sucesso!')
+      } catch (error) {
+        console.error('Erro ao enviar e-mail:', error)
+        // Continuar mesmo se o e-mail falhar
+      }
+
+      setCurrentStep(5) // Vai para a página de resultados
+    }
+  }
+
   const handleStepClick = (stepNum) => {
     if (stepNum < currentStep) {
       // Sempre permitir voltar para etapas anteriores
@@ -133,9 +216,9 @@ function App() {
     } else if (stepNum === currentStep) {
       // Se clicar na etapa atual, validar e permanecer ou avançar se for o caso
       if (validateStep(currentStep)) {
-        if (stepNum === 4 && resultado) {
+        if (stepNum === 5 && resultado) {
           setCurrentStep(stepNum)
-        } else if (stepNum < 4) {
+        } else if (stepNum < 5) {
           setCurrentStep(stepNum)
         }
       }
@@ -164,7 +247,15 @@ function App() {
       somaPercentuais,
       markupDivisor: markupDivisor.toFixed(2)
     })
-    setCurrentStep(4) // Vai para a página de resultados
+    
+    // Calcular preço final automaticamente se o custo do insumo foi preenchido
+    if (custoInsumo && parseFloat(custoInsumo) > 0) {
+      const custo = parseFloat(custoInsumo)
+      const preco = (custo * markupDivisor).toFixed(2)
+      setPrecoFinal(preco)
+    }
+    
+    setCurrentStep(4) // Vai para a nova página de coleta de dados
   }
 
   const resetForm = () => {
@@ -183,6 +274,10 @@ function App() {
     setCurrentStep(1)
     setCustoInsumo("")
     setPrecoFinal(null)
+    setUserData({
+      nome: "",
+      whatsapp: ""
+    })
   }
 
   const questionsStep1 = [
@@ -364,19 +459,26 @@ function App() {
       case 3:
         return (
           <CardContent className="p-6 md:p-8 space-y-6">
+            <div className="text-center space-y-2 mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow-sm">
+              <TrendingUp className="h-8 w-8 mx-auto text-yellow-600" />
+              <h3 className="text-xl font-bold text-yellow-800">Momento Crucial!</h3>
+              <p className="text-yellow-700">
+                Agora, defina sua margem de lucro desejada e o custo do insumo para calcular o preço ideal do seu produto.
+              </p>
+            </div>
             {questionsStep3.map((question) => {
               const Icon = question.icon
               return (
-                <div key={question.id} className="space-y-2">
+                <div key={question.id} className="space-y-2 p-4 bg-green-50 border border-green-200 rounded-lg shadow-sm">
                   <Label 
                     htmlFor={question.id}
-                    className="text-sm font-medium text-gray-700"
+                    className="text-base font-semibold text-green-800"
                   >
                     {question.label}
                   </Label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Icon className="h-4 w-4 text-gray-400" />
+                      <Icon className="h-4 w-4 text-green-400" />
                     </div>
                     <Input
                       id={question.id}
@@ -384,10 +486,10 @@ function App() {
                       placeholder={question.placeholder}
                       value={formData[question.id]}
                       onChange={(e) => handleInputChange(question.id, e.target.value)}
-                      className={`pl-10 pr-8 ${errors[question.id] ? 'border-red-500' : 'border-gray-300'}`}
+                      className={`pl-10 pr-8 bg-white ${errors[question.id] ? 'border-red-500' : 'border-green-300'}`}
                     />
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-400 text-sm">%</span>
+                      <span className="text-green-400 text-sm">%</span>
                     </div>
                   </div>
                   {errors[question.id] && (
@@ -399,6 +501,26 @@ function App() {
                 </div>
               )
             })}
+            <div className="space-y-2 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+              <Label htmlFor="custoInsumo" className="text-base font-semibold text-blue-800">Custo do Insumo / Mercadoria (R$):</Label>
+              <p className="text-sm text-blue-700 mb-2">
+                Aqui você coloca o valor do custo de aquisição dos insumos ou mercadorias que compõe seu produto!
+              </p>
+              <Input
+                id="custoInsumo"
+                type="number"
+                placeholder="Ex: 100,00"
+                value={custoInsumo}
+                onChange={(e) => setCustoInsumo(e.target.value)}
+                className={`mt-1 bg-white ${errors.custoInsumo ? 'border-red-500' : 'border-gray-300'}`}
+              />
+              {errors.custoInsumo && (
+                <div className="flex items-center space-x-1 text-red-600 text-sm">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{errors.custoInsumo}</span>
+                </div>
+              )}
+            </div>
             <div className="flex justify-between pt-4">
               <Button onClick={handlePreviousStep} variant="outline">
                 <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
@@ -414,6 +536,78 @@ function App() {
           </CardContent>
         )
       case 4:
+        return (
+          <CardContent className="p-6 md:p-8 space-y-6">
+            {/* Texto persuasivo */}
+            <div className="text-center space-y-4 mb-6">
+              <div className="text-2xl font-bold text-green-600">
+                🎉 Parabéns! Seu Markup foi calculado!
+              </div>
+              <div className="text-lg text-gray-700">
+                Para visualizar seu cálculo e também receber um relatório mais completo por WhatsApp gratuitamente, preencha os dados abaixo:
+              </div>
+              <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+                💡 <strong>Bônus:</strong> Você receberá dicas exclusivas de precificação e estratégias para aumentar sua margem de lucro!
+              </div>
+            </div>
+
+            {/* Campos de coleta */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="nome" className="text-sm font-medium text-gray-700">
+                  Seu nome completo:
+                </Label>
+                <Input
+                  id="nome"
+                  type="text"
+                  placeholder="Digite seu nome completo"
+                  value={userData.nome}
+                  onChange={(e) => handleUserDataChange('nome', e.target.value)}
+                  className={`${errors.nome ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {errors.nome && (
+                  <div className="flex items-center space-x-1 text-red-600 text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{errors.nome}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="whatsapp" className="text-sm font-medium text-gray-700">
+                  Seu WhatsApp (apenas números):
+                </Label>
+                <Input
+                  id="whatsapp"
+                  type="text"
+                  placeholder="Ex: 11999999999"
+                  value={userData.whatsapp}
+                  onChange={(e) => handleUserDataChange('whatsapp', e.target.value.replace(/\D/g, ''))}
+                  className={`${errors.whatsapp ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                {errors.whatsapp && (
+                  <div className="flex items-center space-x-1 text-red-600 text-sm">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{errors.whatsapp}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-between pt-4">
+              <Button onClick={handlePreviousStep} variant="outline">
+                <ArrowLeft className="h-4 w-4 mr-2" /> Anterior
+              </Button>
+              <Button 
+                onClick={handleProceedToResults}
+                className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+              >
+                Ver Meu Resultado 🚀
+              </Button>
+            </div>
+          </CardContent>
+        )
+      case 5:
         return (
           <CardContent className="p-6 md:p-8">
             {resultado ? (
@@ -461,41 +655,22 @@ function App() {
                   <div className="text-sm text-green-600 mt-2">
                     Multiplique seus custos por este valor
                   </div>
-                  {/* Nova indicação para o próximo passo */}
-                  <div className="text-center mt-4 flex flex-col items-center">
-                    <ArrowDown className="h-8 w-8 text-blue-500 animate-bounce" />
-                    <p className="text-blue-700 font-semibold mt-2">
-                      Agora, insira a soma dos custo dos seus insumos ou mercadorias, no bloco abaixo para calcular o preço final automaticamente!
-                    </p>
-                  </div>
                 </div>
 
-                {/* Cálculo do Preço Final */}
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border-2 border-blue-200 shadow-md animate-pulse-custom">
-                  <h4 className="font-bold text-blue-800 mb-2 text-lg">Calcule o Preço Final:</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="custoInsumo" className="text-sm font-medium text-gray-700">Custo do Insumo / Mercadoria (R$):</Label>
-                      <Input
-                        id="custoInsumo"
-                        type="number"
-                        placeholder="Ex: 100,00"
-                        value={custoInsumo}
-                        onChange={(e) => setCustoInsumo(e.target.value)}
-                        className="mt-1 bg-white"
-                      />
+                {/* Bloco de Destaque do Preço Final */}
+                {precoFinal && (
+                  <div className="text-center p-8 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl border-2 border-emerald-300 shadow-lg">
+                    <div className="text-lg text-emerald-700 font-semibold mb-3">
+                      🎯 PREÇO FINAL CALCULADO
                     </div>
-                    <Button onClick={handleCalcularPrecoFinal} className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
-                      Calcular Preço Final
-                    </Button>
-                    {precoFinal && (
-                      <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                        <span className="font-semibold text-blue-800">Preço Final Sugerido:</span>
-                        <span className="font-bold text-blue-800 ml-2">R$ {precoFinal}</span>
-                      </div>
-                    )}
+                    <div className="text-5xl font-bold text-emerald-800 mb-3">
+                      R$ {precoFinal}
+                    </div>
+                    <div className="text-emerald-600 text-sm">
+                      Baseado no custo de R$ {parseFloat(custoInsumo).toFixed(2)} e markup de {resultado.markupDivisor}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Gráfico de Pizza */}
                 {precoFinal && (
@@ -616,14 +791,14 @@ function App() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 w-full max-w-2xl mx-auto">
           <div className="flex justify-center space-x-4 -mt-12 mb-4">
-            {[1, 2, 3, 4].map((stepNum) => (
+            {[1, 2, 3, 4, 5].map((stepNum) => (
               <button
                 key={stepNum}
                 onClick={() => handleStepClick(stepNum)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2
                   ${currentStep >= stepNum ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}
-                  ${stepNum <= 3 || (stepNum === 4 && resultado) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
-                disabled={stepNum > 3 && !resultado}
+                  ${stepNum <= 4 || (stepNum === 5 && resultado) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                disabled={stepNum > 4 && !resultado}
                 title={`Ir para etapa ${stepNum}`}
               >
                 {stepNum}
@@ -639,14 +814,16 @@ function App() {
                   {currentStep === 1 && "Dados para Cálculo - Etapa 1/3"}
                   {currentStep === 2 && "Dados para Cálculo - Etapa 2/3"}
                   {currentStep === 3 && "Dados para Cálculo - Etapa 3/3"}
-                  {currentStep === 4 && "Resultado do Cálculo"}
+                  {currentStep === 4 && "Dados Pessoais"}
+                  {currentStep === 5 && "Resultado do Cálculo"}
                 </span>
               </CardTitle>
               <CardDescription className="text-blue-100">
                 {currentStep === 1 && "Preencha os percentuais abaixo para calcular seu markup divisor"}
                 {currentStep === 2 && "Preencha o percentual de outros custos/despesas"}
                 {currentStep === 3 && "Preencha o percentual de margem de lucro desejada"}
-                {currentStep === 4 && "Seu markup divisor calculado"}
+                {currentStep === 4 && "Preencha seus dados para receber o resultado"}
+                {currentStep === 5 && "Seu markup divisor calculado"}
               </CardDescription>
             </CardHeader>
             {renderStepContent()}
